@@ -16,20 +16,21 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.ninjadev.freelook.Freelook"
+      "net.ninjadev.freelook.FreeLookFabric"
+    ],
+    "client": [
+      "net.ninjadev.freelook.FreeLookClient"
     ]
   },
   "mixins": [
-    "${mod_id}.mixins.json",
-    "${mod_id}.fabric.mixins.json"
+    {
+      "config": "freelook.mixins.json",
+      "environment": "client"
+    }
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "fabric-api": "*",
-    "minecraft": "${minecraft_version}",
+    "minecraft": ">=${minecraft_version}",
     "java": ">=${java_version}"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

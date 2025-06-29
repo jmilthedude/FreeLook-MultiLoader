@@ -8,7 +8,7 @@ base {
 }
 mixin {
     config("${mod_id}.mixins.json")
-    config("${mod_id}.forge.mixins.json")
+    add sourceSets.main, "freelook.mixins.refmap.json"
 }
 
 minecraft {
@@ -72,6 +72,14 @@ dependencies {
 
     // Forge's hack fix
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
+}
+
+jar {
+    manifest {
+        attributes([
+                "MixinConfigs": "freelook.mixins.json"
+        ])
+    }
 }
 
 publishing {
