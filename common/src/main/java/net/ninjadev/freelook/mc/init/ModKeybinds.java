@@ -1,4 +1,4 @@
-package net.ninjadev.freelook.init;
+package net.ninjadev.freelook.mc.init;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;

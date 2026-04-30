@@ -6,6 +6,10 @@ import net.neoforged.fml.loading.FMLLoader;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
 
+    public NeoForgePlatformHelper() {
+        FMLLoader.class.getName();
+    }
+
     @Override
     public String getPlatformName() {
         return "NeoForge";

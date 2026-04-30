@@ -1,9 +1,9 @@
-package net.ninjadev.freelook.mixin;
+package net.ninjadev.freelook.mc.mixin;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.ninjadev.freelook.init.ModKeybinds;
+import net.ninjadev.freelook.mc.init.ModKeybinds;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

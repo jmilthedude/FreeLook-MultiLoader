@@ -6,6 +6,10 @@ import net.minecraftforge.fml.loading.FMLLoader;
 
 public class ForgePlatformHelper implements IPlatformHelper {
 
+    public ForgePlatformHelper() {
+        FMLLoader.class.getName();
+    }
+
     @Override
     public String getPlatformName() {
         return "Forge";

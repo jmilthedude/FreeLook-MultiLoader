@@ -1,4 +1,4 @@
-package net.ninjadev.freelook.event;
+package net.ninjadev.freelook.mc.event;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -7,8 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.ninjadev.freelook.Constants;
 import net.ninjadev.freelook.init.ModConfigs;
-import net.ninjadev.freelook.init.ModKeybinds;
-import net.ninjadev.freelook.mixin.CameraAccessor;
+import net.ninjadev.freelook.mc.init.ModKeybinds;
+import net.ninjadev.freelook.mc.mixin.CameraAccessor;
 
 public class CameraEvents {
     private static Minecraft minecraft;
@@ -43,7 +43,6 @@ public class CameraEvents {
         if (getMinecraft().options.getCameraType().isMirrored()) return;
 
         if (ModKeybinds.keyFreeLook.isDown() || isToggled) {
-            Constants.LOG.info("FreeLook camera active");
             if (state == State.INACTIVE) {
                 reset();
                 setup();
