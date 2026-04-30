@@ -35,7 +35,7 @@ public class CameraEvents {
     public static void onClientTick() {
         if (ModKeybinds.keyToggleMode.consumeClick()) {
             isToggled = !isToggled;
-            getPlayer().sendSystemMessage(Component.literal("FreeLook Toggle: " + isToggled));
+            getPlayer().displayClientMessage(Component.literal("FreeLook Toggle: " + isToggled), true);
         }
     }
 
@@ -94,7 +94,7 @@ public class CameraEvents {
             yaw = Mth.clamp(yaw, (originalYaw - 100.0F), (originalYaw + 100.0F));
         }
 
-        if (getMinecraft().options.invertYMouse().get()) {
+        if (getMinecraft().options.invertMouseY().get()) {
             pitch = prevPitch + (float) dy;
         } else {
             pitch = prevPitch - (float) dy;
