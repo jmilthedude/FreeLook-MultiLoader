@@ -1,6 +1,142 @@
 plugins {
+    id 'java-base'
+    id 'com.gradleup.shadow' version '8.3.5'
     // see https://fabricmc.net/develop/ for new versions
-    id 'fabric-loom' version '1.7-SNAPSHOT' apply false
+    id 'fabric-loom' version '1.11-SNAPSHOT' apply false
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
-    id 'net.neoforged.moddev' version '0.1.110' apply false
+    id 'net.neoforged.moddev' version '2.0.115' apply false
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+// Relocate Fabric JAR's mc package -> fabric package (intermediary bytecode)
+tasks.register('shadowFabric', ShadowJar) {
+    group = 'universal'
+    dependsOn ':fabric:remapJar'
+    from(zipTree(project(':fabric').tasks.remapJar.archiveFile))
+    include 'net/ninjadev/freelook/mc/**'
+    relocate 'net.ninjadev.freelook.mc', 'net.ninjadev.freelook.fabric'
+    archiveFileName = 'fabric-relocated.jar'
+    destinationDirectory = layout.buildDirectory.dir('universal')
+}
+
+// Relocate Forge JAR's mc package -> forgelike package (official bytecode)
+tasks.register('shadowForge', ShadowJar) {
+    group = 'universal'
+    dependsOn ':forge:jar'
+    from(zipTree(project(':forge').tasks.jar.archiveFile))
+    include 'net/ninjadev/freelook/mc/**'
+    relocate 'net.ninjadev.freelook.mc', 'net.ninjadev.freelook.forgelike'
+    archiveFileName = 'forge-relocated.jar'
+    destinationDirectory = layout.buildDirectory.dir('universal')
+}
+
+// Rewrite refmap keys from mc package to fabric package
+tasks.register('processRefmap') {
+    group = 'universal'
+    dependsOn ':fabric:remapJar'
+    inputs.file(project(':fabric').tasks.remapJar.archiveFile)
+    def outputFile = layout.buildDirectory.file('universal/freelook.fabric.refmap.json')
+    outputs.file(outputFile)
+    doLast {
+        def jarFile = project(':fabric').tasks.remapJar.archiveFile.get().asFile
+        def refmapText = null
+        new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
+            def entry = zip.getEntry('freelook.refmap.json')
+            if (entry != null) {
+                refmapText = zip.getInputStream(entry).text
+            }
+        }
+        if (refmapText != null) {
+            refmapText = refmapText.replace('net/ninjadev/freelook/mc/', 'net/ninjadev/freelook/fabric/')
+            outputFile.get().asFile.text = refmapText
+        }
+    }
+}
+
+// Assemble the universal JAR from all loaders
+tasks.register('universalJar', Jar) {
+    group = 'build'
+    description = 'Creates a single JAR that works on Fabric, Forge, and NeoForge'
+    dependsOn 'shadowFabric', 'shadowForge', 'processRefmap', ':neoforge:jar'
+
+    archiveFileName = "${mod_name}-universal-${minecraft_version}-${version}.jar"
+    destinationDirectory = layout.buildDirectory.dir('libs')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // Shared pure classes + resources from Forge JAR (official names, identical across loaders)
+    from(zipTree(project(':forge').tasks.jar.archiveFile)) {
+        include 'net/ninjadev/freelook/*.class'
+        include 'net/ninjadev/freelook/config/**'
+        include 'net/ninjadev/freelook/init/**'
+        include 'net/ninjadev/freelook/platform/Services.class'
+        include 'net/ninjadev/freelook/platform/services/**'
+        include 'assets/**'
+        include 'pack.mcmeta'
+    }
+
+    // Fabric entry points + platform helper
+    from(zipTree(project(':fabric').tasks.remapJar.archiveFile)) {
+        include 'net/ninjadev/freelook/FreeLookFabric.class'
+        include 'net/ninjadev/freelook/FreeLookClient.class'
+        include 'net/ninjadev/freelook/platform/FabricPlatformHelper.class'
+    }
+
+    // Forge entry point + platform helper
+    from(zipTree(project(':forge').tasks.jar.archiveFile)) {
+        include 'net/ninjadev/freelook/FreeLookForge.class'
+        include 'net/ninjadev/freelook/platform/ForgePlatformHelper.class'
+    }
+
+    // NeoForge entry point + platform helper
+    from(zipTree(project(':neoforge').tasks.jar.archiveFile)) {
+        include 'net/ninjadev/freelook/FreeLookNeoforge.class'
+        include 'net/ninjadev/freelook/platform/NeoForgePlatformHelper.class'
+    }
+
+    // Relocated Fabric MC classes (intermediary bytecode)
+    from(zipTree(layout.buildDirectory.file('universal/fabric-relocated.jar'))) {
+        include 'net/ninjadev/freelook/fabric/**'
+    }
+
+    // Relocated Forge MC classes (official bytecode used by both Forge and NeoForge)
+    from(zipTree(layout.buildDirectory.file('universal/forge-relocated.jar'))) {
+        include 'net/ninjadev/freelook/forgelike/**'
+    }
+
+    // Processed Fabric refmap with relocated package keys
+    from(layout.buildDirectory.dir('universal')) {
+        include 'freelook.fabric.refmap.json'
+    }
+
+    // Universal resource files (mixin configs, loader metadata, ServiceLoader)
+    // Expand Gradle properties in metadata files, same as processResources in subprojects
+    def expandProps = ['version'                      : version,
+                       'group'                        : project.group,
+                       'minecraft_version'            : minecraft_version,
+                       'minecraft_version_range'      : minecraft_version_range,
+                       'fabric_version'               : fabric_version,
+                       'fabric_loader_version'        : fabric_loader_version,
+                       'mod_name'                     : mod_name,
+                       'mod_author'                   : mod_author,
+                       'mod_id'                       : mod_id,
+                       'license'                      : license,
+                       'description'                  : project.findProperty('description') ?: '',
+                       'neoforge_version'             : neoforge_version,
+                       'neoforge_loader_version_range': neoforge_loader_version_range,
+                       'forge_version'                : forge_version,
+                       'forge_loader_version_range'   : forge_loader_version_range,
+                       'credits'                      : credits,
+                       'java_version'                 : java_version]
+    from('universal') {
+        filesMatching(['fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+            expand expandProps
+        }
+    }
+
+    manifest {
+        attributes([
+            'MixinConfigs': 'freelook.forgelike.mixins.json'
+        ])
+    }
 }

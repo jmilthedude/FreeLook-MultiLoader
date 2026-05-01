@@ -1,4 +1,4 @@
-package net.ninjadev.freelook.mixin;
+package net.ninjadev.freelook.mc.mixin;
 
 import net.minecraft.client.Camera;
 import org.spongepowered.asm.mixin.Mixin;

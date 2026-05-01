@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.ninjadev.freelook.mc.mixin",
-  "refmap": "freelook.refmap.json",
+  "package": "net.ninjadev.freelook.fabric.mixin",
+  "refmap": "freelook.fabric.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [

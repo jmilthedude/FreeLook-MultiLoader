@@ -1,7 +1,7 @@
-package net.ninjadev.freelook.mixin;
+package net.ninjadev.freelook.mc.mixin;
 
 import net.minecraft.client.Minecraft;
-import net.ninjadev.freelook.event.CameraEvents;
+import net.ninjadev.freelook.mc.event.CameraEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
