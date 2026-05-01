@@ -11,7 +11,7 @@ credits = "${credits}"
 authors = "${mod_author}"
 description = '''${description}'''
 [[mixins]]
-config="freelook.forgelike.mixins.json"
+config="freelook.mixins.json"
 [[dependencies."${mod_id}"]]
 modId = "forge" #mandatory
 mandatory = true #mandatory
