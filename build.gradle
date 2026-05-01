@@ -35,6 +35,7 @@ tasks.register('shadowForge', ShadowJar) {
 tasks.register('processRefmap') {
     group = 'universal'
     dependsOn ':fabric:remapJar'
+    inputs.file(project(':fabric').tasks.remapJar.archiveFile)
     def outputFile = layout.buildDirectory.file('universal/freelook.fabric.refmap.json')
     outputs.file(outputFile)
     doLast {
