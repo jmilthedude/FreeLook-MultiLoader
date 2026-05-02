@@ -35,7 +35,7 @@ public class CameraEvents {
     public static void onClientTick() {
         if (ModKeybinds.keyToggleMode.consumeClick()) {
             isToggled = !isToggled;
-            getPlayer().displayClientMessage(Component.literal("FreeLook Toggle: " + isToggled), true);
+            getPlayer().sendOverlayMessage(Component.literal("FreeLook Toggle: " + isToggled));
         }
     }
 
@@ -75,7 +75,6 @@ public class CameraEvents {
     }
 
     private static void setup() {
-        Constants.LOG.info("Setting up FreeLook camera...");
         originalYaw = getPlayer().getYRot();
         originalPitch = getPlayer().getXRot();
         yaw = prevYaw = originalYaw;
@@ -180,6 +179,14 @@ public class CameraEvents {
 
     public static boolean shouldUpdate() {
         return ModKeybinds.keyFreeLook.isDown() || CameraEvents.isToggled || state != State.INACTIVE;
+    }
+
+    public static float getYaw() {
+        return yaw;
+    }
+
+    public static float getPitch() {
+        return pitch;
     }
 
     public enum State {

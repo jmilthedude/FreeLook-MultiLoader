@@ -7,10 +7,7 @@
   "authors": [
     "${mod_author}"
   ],
-  "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
-  },
+  "contact": {},
   "license": "${license}",
   "icon": "${mod_id}.png",
   "environment": "*",
@@ -24,7 +21,7 @@
   },
   "mixins": [
     {
-      "config": "freelook.fabric.mixins.json",
+      "config": "freelook.mixins.json",
       "environment": "client"
     }
   ],
