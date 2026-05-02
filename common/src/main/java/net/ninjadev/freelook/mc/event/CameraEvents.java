@@ -181,6 +181,14 @@ public class CameraEvents {
         return ModKeybinds.keyFreeLook.isDown() || CameraEvents.isToggled || state != State.INACTIVE;
     }
 
+    public static float getYaw() {
+        return yaw;
+    }
+
+    public static float getPitch() {
+        return pitch;
+    }
+
     public enum State {
         INACTIVE, ACTIVE, INTERPOLATING
     }
