@@ -7,8 +7,6 @@ plugins {
 }
 
 // Assemble the universal JAR from all loaders
-// Since MC 26.1 removed obfuscation, all loaders use the same class names —
-// no relocation needed.
 tasks.register('universalJar', Jar) {
     group = 'build'
     description = 'Creates a single JAR that works on Fabric, Forge, and NeoForge'
