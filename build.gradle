@@ -37,9 +37,10 @@ tasks.register('universalJar', Jar) {
         include 'net/ninjadev/freelook/platform/FabricPlatformHelper.class'
     }
 
-    // NeoForge entry point + platform helper
+    // NeoForge entry point + platform helper + event handler
     from(zipTree(project(':neoforge').tasks.jar.archiveFile)) {
         include 'net/ninjadev/freelook/FreeLookNeoforge.class'
+        include 'net/ninjadev/freelook/ClientEvents.class'
         include 'net/ninjadev/freelook/platform/NeoForgePlatformHelper.class'
     }
 
